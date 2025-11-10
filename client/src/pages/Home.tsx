@@ -32,7 +32,10 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
 
   // Queries
-  const { data: bombonas, isLoading: bombonaListLoading } = trpc.bombonas.list.useQuery();
+  const { data: bombonas, isLoading: bombonaListLoading } = trpc.bombonas.list.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   // Mutations
   const createBombonaMutation = trpc.bombonas.create.useMutation({

@@ -33,17 +33,29 @@ export default function BombonaTracker() {
   // Queries
   const { data: bombona, isLoading: bombonaLoading } = trpc.bombonas.getByNumero.useQuery(
     { numero: numero || '' },
-    { enabled: !!numero }
+    { 
+      enabled: !!numero,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    }
   );
 
   const { data: historico, isLoading: historicoLoading } = trpc.rastreamentos.getHistorico.useQuery(
     { bombonaId: bombona?.id || 0 },
-    { enabled: !!bombona?.id }
+    { 
+      enabled: !!bombona?.id,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    }
   );
 
   const { data: anotacoes, isLoading: anotacoesLoading } = trpc.anotacoes.list.useQuery(
     { bombonaId: bombona?.id || 0 },
-    { enabled: !!bombona?.id }
+    { 
+      enabled: !!bombona?.id,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    }
   );
 
   // Mutations

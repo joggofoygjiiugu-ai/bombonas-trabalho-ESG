@@ -11,7 +11,10 @@ import { trpc } from "./lib/trpc";
 import { Loader2 } from "lucide-react";
 
 function Router() {
-  const { data: user, isLoading } = trpc.auth.me.useQuery();
+  const { data: user, isLoading } = trpc.auth.me.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   if (isLoading) {
     return (
