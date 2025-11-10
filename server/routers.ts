@@ -8,16 +8,6 @@ export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
-    login: publicProcedure
-      .input(z.object({ username: z.string(), password: z.string() }))
-      .mutation(async ({ input, ctx }) => {
-        if (input.username === "admin" && input.password === "admin") {
-          const cookieOptions = getSessionCookieOptions(ctx.req);
-          ctx.res.cookie(COOKIE_NAME, "authenticated", { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 });
-          return { success: true, user: { name: "Admin" } };
-        }
-        throw new Error("Usuário ou senha inválidos");
-      }),
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
 import { QRCodeScanner } from '@/components/QRCodeScanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +23,7 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function Home() {
+  const { user, logout, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [searchNumero, setSearchNumero] = useState('');
@@ -37,12 +40,6 @@ export default function Home() {
     },
     onError: (error) => {
       toast.error(`Erro ao criar bombona: ${error.message}`);
-    },
-  });
-
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      window.location.reload();
     },
   });
 
@@ -66,9 +63,36 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logout();
     toast.success('Desconectado com sucesso');
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl">Rastreamento de Bombonas</CardTitle>
+            <CardDescription>
+              Gerencie e rastreie suas bombonas em tempo real
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-gray-600 mb-6">
+              Faça login para acessar o sistema de rastreamento
+            </p>
+          <Button
+            onClick={() => window.location.href = getLoginUrl()}
+            className="w-full"
+            size="lg"
+          >
+            Fazer Login
+          </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,13 +101,12 @@ export default function Home() {
         <div className="container mx-auto py-4 px-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Rastreamento de Bombonas</h1>
-            <p className="text-sm text-gray-600">Bem-vindo, Admin</p>
+            <p className="text-sm text-gray-600">Bem-vindo, {user?.name || 'Usuário'}</p>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            disabled={logoutMutation.isPending}
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sair
@@ -91,29 +114,23 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto py-8 px-4">
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="container mx-auto py-8 space-y-6 px-4">
+        {/* Ações Rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Ler QR Code */}
           <Dialog open={showQRScanner} onOpenChange={setShowQRScanner}>
             <DialogTrigger asChild>
               <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <QrCode className="w-12 h-12 mx-auto mb-4 text-blue-600" />
-                    <h3 className="font-semibold mb-2">Ler QR Code</h3>
-                    <p className="text-sm text-gray-600">Escaneie o QR Code de uma bombona</p>
-                  </div>
+                <CardContent className="pt-6 text-center">
+                  <QrCode className="w-12 h-12 mx-auto mb-2 text-blue-600" />
+                  <h3 className="font-semibold mb-1">Ler QR Code</h3>
+                  <p className="text-sm text-gray-600">Escaneie o QR Code de uma bombona</p>
                 </CardContent>
               </Card>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Ler QR Code</DialogTitle>
-                <DialogDescription>
-                  Aponte a câmera para o QR Code da bombona
-                </DialogDescription>
               </DialogHeader>
               <QRCodeScanner onQRCodeDetected={handleQRCodeDetected} />
             </DialogContent>
@@ -121,45 +138,37 @@ export default function Home() {
 
           {/* Pesquisar Bombona */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Pesquisar Bombona</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Input
-                placeholder="Ex: B001"
-                value={searchNumero}
-                onChange={(e) => setSearchNumero(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearchBombona()}
-              />
+            <CardContent className="pt-6 space-y-3">
+              <div>
+                <h3 className="font-semibold mb-2">Pesquisar Bombona</h3>
+                <Input
+                  placeholder="Ex: B001"
+                  value={searchNumero}
+                  onChange={(e) => setSearchNumero(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearchBombona()}
+                />
+              </div>
               <Button
                 onClick={handleSearchBombona}
-                disabled={isSearching}
+                disabled={!searchNumero.trim()}
                 className="w-full"
               >
-                {isSearching ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Pesquisando...
-                  </>
-                ) : (
-                  'Pesquisar'
-                )}
+                Pesquisar
               </Button>
             </CardContent>
           </Card>
 
-          {/* Criar Bombona */}
+          {/* Criar Nova Bombona */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Criar Bombona</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">Registre uma nova bombona no sistema</p>
+            <CardContent className="pt-6 text-center">
+              <Plus className="w-12 h-12 mx-auto mb-2 text-green-600" />
+              <h3 className="font-semibold mb-1">Criar Bombona</h3>
+              <p className="text-sm text-gray-600 mb-3">Registre uma nova bombona no sistema</p>
               <Button
                 onClick={handleCreateBombona}
                 disabled={createBombonaMutation.isPending}
+                variant="default"
                 className="w-full"
-                size="lg"
               >
                 {createBombonaMutation.isPending ? (
                   <>
@@ -167,17 +176,14 @@ export default function Home() {
                     Criando...
                   </>
                 ) : (
-                  <>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Criar
-                  </>
+                  'Criar'
                 )}
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Todas as Bombonas */}
+        {/* Lista de Bombonas */}
         <Card>
           <CardHeader>
             <CardTitle>Todas as Bombonas</CardTitle>
@@ -191,26 +197,35 @@ export default function Home() {
                 <Loader2 className="w-6 h-6 animate-spin" />
               </div>
             ) : bombonas && bombonas.length > 0 ? (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {bombonas.map((bombona) => (
-                  <div
+                  <Card
                     key={bombona.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                    className="cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => navigate(`/bombona/${bombona.numero}`)}
                   >
-                    <div>
-                      <p className="font-semibold">{bombona.numero}</p>
-                      <p className="text-sm text-gray-600">
-                        Criada em {format(new Date(bombona.createdAt), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                    <CardContent className="pt-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-lg font-bold">{bombona.numero}</h3>
+                        <Badge className={statusLabels[bombona.status as any]?.color}>
+                          {statusLabels[bombona.status as any]?.label}
+                        </Badge>
+                      </div>
+                      {bombona.localizacao && (
+                        <p className="text-sm text-gray-600 mb-2">
+                          📍 {bombona.localizacao}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500">
+                        Criada em {format(new Date(bombona.createdAt), 'dd MMM yyyy', { locale: ptBR })}
                       </p>
-                    </div>
-                    <Badge variant="outline">{bombona.status || 'galpao'}</Badge>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">Nenhuma bombona registrada ainda</p>
+              <div className="text-center py-8">
+                <p className="text-gray-500">Nenhuma bombona registrada ainda</p>
                 <p className="text-sm text-gray-400">Clique em "Criar Bombona" para começar</p>
               </div>
             )}

@@ -58,11 +58,3 @@
 ## Bugs Encontrados
 
 - [x] Corrigir erro 404 na rota /api/oauth/login
-
-
-## Autenticação com Usuário e Senha
-
-- [x] Implementar API de login com credenciais admin/admin
-- [x] Criar página de login no frontend
-- [x] Integrar autenticação com redirecionamento automático
-- [x] Testar fluxo completo de login e logout
