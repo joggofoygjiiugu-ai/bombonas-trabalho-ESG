@@ -5,7 +5,6 @@ import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -89,11 +88,7 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// ============ BOMBONAS ============
 
-/**
- * Obtém o próximo número de bombona (B001, B002, etc.)
- */
 export async function getNextBombonaNumber(): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -113,9 +108,6 @@ export async function getNextBombonaNumber(): Promise<string> {
   return `B${String(nextNumber).padStart(3, "0")}`;
 }
 
-/**
- * Cria uma nova bombona
- */
 export async function createBombona(
   userId: number,
   localizacao?: string
@@ -142,9 +134,6 @@ export async function createBombona(
   return created[0];
 }
 
-/**
- * Obtém uma bombona por número (B001, B002, etc.)
- */
 export async function getBombonaByNumero(numero: string): Promise<Bombona | undefined> {
   const db = await getDb();
   if (!db) return undefined;
@@ -158,9 +147,6 @@ export async function getBombonaByNumero(numero: string): Promise<Bombona | unde
   return result.length > 0 ? result[0] : undefined;
 }
 
-/**
- * Obtém uma bombona por ID
- */
 export async function getBombonaById(id: number): Promise<Bombona | undefined> {
   const db = await getDb();
   if (!db) return undefined;
@@ -174,9 +160,6 @@ export async function getBombonaById(id: number): Promise<Bombona | undefined> {
   return result.length > 0 ? result[0] : undefined;
 }
 
-/**
- * Lista todas as bombonas
- */
 export async function listBombonas(): Promise<Bombona[]> {
   const db = await getDb();
   if (!db) return [];
@@ -184,9 +167,6 @@ export async function listBombonas(): Promise<Bombona[]> {
   return db.select().from(bombonas).orderBy(desc(bombonas.createdAt));
 }
 
-/**
- * Atualiza o status de uma bombona
- */
 export async function updateBombonaStatus(
   bombonaId: number,
   novoStatus: "galpao" | "a_caminho" | "no_local" | "recolhida" | "entregue_galpao",
@@ -199,7 +179,6 @@ export async function updateBombonaStatus(
   const bombona = await getBombonaById(bombonaId);
   if (!bombona) throw new Error("Bombona not found");
 
-  // Registra no histórico
   await db.insert(rastreamentos).values({
     bombonaId,
     statusAnterior: bombona.status as any,
@@ -208,7 +187,6 @@ export async function updateBombonaStatus(
     usuarioId: userId,
   });
 
-  // Atualiza o status atual
   await db
     .update(bombonas)
     .set({ status: novoStatus, localizacao })
@@ -219,11 +197,7 @@ export async function updateBombonaStatus(
   return updated;
 }
 
-// ============ RASTREAMENTOS ============
 
-/**
- * Obtém o histórico completo de rastreamento de uma bombona
- */
 export async function getRastreamentoHistorico(bombonaId: number): Promise<Rastreamento[]> {
   const db = await getDb();
   if (!db) return [];
@@ -235,11 +209,7 @@ export async function getRastreamentoHistorico(bombonaId: number): Promise<Rastr
     .orderBy(asc(rastreamentos.createdAt));
 }
 
-// ============ ANOTAÇÕES ============
 
-/**
- * Adiciona uma anotação a uma bombona
- */
 export async function addAnotacao(
   bombonaId: number,
   conteudo: string,
@@ -265,9 +235,6 @@ export async function addAnotacao(
   return created[0];
 }
 
-/**
- * Obtém todas as anotações de uma bombona
- */
 export async function getAnotacoes(bombonaId: number): Promise<Anotacao[]> {
   const db = await getDb();
   if (!db) return [];
@@ -279,9 +246,6 @@ export async function getAnotacoes(bombonaId: number): Promise<Anotacao[]> {
     .orderBy(desc(anotacoes.createdAt));
 }
 
-/**
- * Deleta uma anotação
- */
 export async function deleteAnotacao(anotacaoId: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -289,9 +253,6 @@ export async function deleteAnotacao(anotacaoId: number): Promise<void> {
   await db.delete(anotacoes).where(eq(anotacoes.id, anotacaoId));
 }
 
-/**
- * Atualiza uma anotação
- */
 export async function updateAnotacao(
   anotacaoId: number,
   conteudo: string
@@ -314,11 +275,7 @@ export async function updateAnotacao(
   return updated[0];
 }
 
-// ============ QR CODE ============
 
-/**
- * Gera um QR Code para uma bombona
- */
 export async function generateQRCode(numero: string): Promise<string> {
   const qrcodeModule = await import("qrcode");
   const qrCodeDataUrl: string = await (qrcodeModule as any).toDataURL(numero, {

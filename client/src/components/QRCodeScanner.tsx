@@ -18,7 +18,6 @@ export function QRCodeScanner({ onQRCodeDetected, isLoading }: QRCodeScannerProp
   const [permission, setPermission] = useState<'granted' | 'denied' | 'prompt' | null>(null);
   const animationFrameRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
 
-  // Inicia a câmera
   const startScanning = async () => {
     try {
       setError(null);
@@ -41,7 +40,6 @@ export function QRCodeScanner({ onQRCodeDetected, isLoading }: QRCodeScannerProp
     }
   };
 
-  // Para a câmera
   const stopScanning = () => {
     if (videoRef.current?.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
@@ -53,7 +51,6 @@ export function QRCodeScanner({ onQRCodeDetected, isLoading }: QRCodeScannerProp
     }
   };
 
-  // Processa cada frame da câmera
   const scanFrame = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -83,7 +80,6 @@ export function QRCodeScanner({ onQRCodeDetected, isLoading }: QRCodeScannerProp
     animationFrameRef.current = requestAnimationFrame(scanFrame);
   };
 
-  // Limpa recursos ao desmontar
   useEffect(() => {
     return () => {
       stopScanning();

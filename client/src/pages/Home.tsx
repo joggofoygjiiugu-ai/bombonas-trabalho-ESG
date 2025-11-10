@@ -31,10 +31,8 @@ export default function Home() {
   const [searchNumero, setSearchNumero] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  // Queries
   const { data: bombonas, isLoading: bombonaListLoading } = trpc.bombonas.list.useQuery();
 
-  // Mutations
   const createBombonaMutation = trpc.bombonas.create.useMutation({
     onSuccess: (bombona) => {
       toast.success(`Bombona ${bombona.numero} criada com sucesso!`);

@@ -5,7 +5,6 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -19,17 +18,11 @@ export const appRouter = router({
   }),
 
   bombonas: router({
-    /**
-     * Lista todas as bombonas
-     */
     list: publicProcedure.query(async () => {
       const { listBombonas } = await import("./db");
       return listBombonas();
     }),
 
-    /**
-     * Obtém uma bombona por número (B001, B002, etc.)
-     */
     getByNumero: publicProcedure
       .input(z.object({ numero: z.string() }))
       .query(async ({ input }) => {
@@ -37,9 +30,6 @@ export const appRouter = router({
         return getBombonaByNumero(input.numero);
       }),
 
-    /**
-     * Obtém uma bombona por ID
-     */
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
@@ -47,9 +37,6 @@ export const appRouter = router({
         return getBombonaById(input.id);
       }),
 
-    /**
-     * Cria uma nova bombona
-     */
     create: protectedProcedure
       .input(z.object({ localizacao: z.string().optional() }))
       .mutation(async ({ ctx, input }) => {
@@ -57,9 +44,6 @@ export const appRouter = router({
         return createBombona(ctx.user.id, input.localizacao);
       }),
 
-    /**
-     * Atualiza o status de uma bombona
-     */
     updateStatus: protectedProcedure
       .input(
         z.object({
@@ -80,9 +64,6 @@ export const appRouter = router({
   }),
 
   rastreamentos: router({
-    /**
-     * Obtém o histórico de rastreamento de uma bombona
-     */
     getHistorico: publicProcedure
       .input(z.object({ bombonaId: z.number() }))
       .query(async ({ input }) => {
@@ -92,9 +73,6 @@ export const appRouter = router({
   }),
 
   anotacoes: router({
-    /**
-     * Lista todas as anotações de uma bombona
-     */
     list: publicProcedure
       .input(z.object({ bombonaId: z.number() }))
       .query(async ({ input }) => {
@@ -102,9 +80,6 @@ export const appRouter = router({
         return getAnotacoes(input.bombonaId);
       }),
 
-    /**
-     * Adiciona uma anotação a uma bombona
-     */
     add: protectedProcedure
       .input(
         z.object({
@@ -117,9 +92,6 @@ export const appRouter = router({
         return addAnotacao(input.bombonaId, input.conteudo, ctx.user.id);
       }),
 
-    /**
-     * Atualiza uma anotação
-     */
     update: protectedProcedure
       .input(
         z.object({
@@ -132,9 +104,6 @@ export const appRouter = router({
         return updateAnotacao(input.anotacaoId, input.conteudo);
       }),
 
-    /**
-     * Deleta uma anotação
-     */
     delete: protectedProcedure
       .input(z.object({ anotacaoId: z.number() }))
       .mutation(async ({ ctx, input }) => {
@@ -144,9 +113,6 @@ export const appRouter = router({
       }),
   }),
   qrcode: router({
-    /**
-     * Gera um QR Code para uma bombona
-     */
     generate: publicProcedure
       .input(z.object({ numero: z.string() }))
       .query(async ({ input }) => {

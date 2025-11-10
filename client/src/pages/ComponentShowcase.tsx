@@ -187,7 +187,6 @@ export default function ComponentsShowcase() {
   const [dialogInput, setDialogInput] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // AI ChatBox demo state
   const [chatMessages, setChatMessages] = useState<Message[]>([
     { role: "system", content: "You are a helpful assistant." },
   ]);
@@ -210,11 +209,9 @@ export default function ComponentsShowcase() {
   };
 
   const handleChatSend = (content: string) => {
-    // Add user message
     const newMessages: Message[] = [...chatMessages, { role: "user", content }];
     setChatMessages(newMessages);
 
-    // Simulate AI response with delay
     setIsChatLoading(true);
     setTimeout(() => {
       const aiResponse: Message = {

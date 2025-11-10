@@ -32,7 +32,6 @@ export default function BombonaTracker() {
   const [editingAnotacaoId, setEditingAnotacaoId] = useState<number | null>(null);
   const [editingAnotacaoContent, setEditingAnotacaoContent] = useState<string>('');
 
-  // Queries
   const { data: bombona, isLoading: bombonaLoading } = trpc.bombonas.getByNumero.useQuery(
     { numero: numero || '' },
     { enabled: !!numero }
@@ -48,7 +47,6 @@ export default function BombonaTracker() {
     { enabled: !!bombona?.id }
   );
 
-  // Mutations
   const updateStatusMutation = trpc.bombonas.updateStatus.useMutation({
     onSuccess: () => {
       toast.success('Status atualizado com sucesso!');
