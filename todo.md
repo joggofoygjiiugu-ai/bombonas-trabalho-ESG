@@ -53,3 +53,8 @@
 - [ ] Criar checkpoint final
 - [ ] Documentar instruções de uso
 - [ ] Preparar para publicação
+
+
+## Bugs Encontrados
+
+- [x] Corrigir erro 404 na rota /api/oauth/login

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
 import { QRCodeScanner } from '@/components/QRCodeScanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -80,13 +81,13 @@ export default function Home() {
             <p className="text-center text-gray-600 mb-6">
               Faça login para acessar o sistema de rastreamento
             </p>
-            <Button
-              onClick={() => window.location.href = '/api/oauth/login'}
-              className="w-full"
-              size="lg"
-            >
-              Fazer Login
-            </Button>
+          <Button
+            onClick={() => window.location.href = getLoginUrl()}
+            className="w-full"
+            size="lg"
+          >
+            Fazer Login
+          </Button>
           </CardContent>
         </Card>
       </div>
