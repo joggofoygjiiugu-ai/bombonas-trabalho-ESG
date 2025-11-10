@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   galpao: { label: 'No Galpão', color: 'bg-blue-100 text-blue-800' },
+  galpao_contaminada: { label: 'No Galpão (Contaminada)', color: 'bg-red-100 text-red-800' },
+  galpao_descontaminada: { label: 'No Galpão (Descontaminada)', color: 'bg-green-100 text-green-800' },
   a_caminho: { label: 'A Caminho', color: 'bg-yellow-100 text-yellow-800' },
   no_local: { label: 'No Local', color: 'bg-purple-100 text-purple-800' },
   recolhida: { label: 'Recolhida', color: 'bg-orange-100 text-orange-800' },

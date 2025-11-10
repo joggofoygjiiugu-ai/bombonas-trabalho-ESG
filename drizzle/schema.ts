@@ -35,12 +35,14 @@ export const bombonas = mysqlTable("bombonas", {
   numero: varchar("numero", { length: 10 }).notNull().unique(),
   /** Status atual da bombona */
   status: mysqlEnum("status", [
-    "galpao",           // No galpão
-    "a_caminho",        // A caminho do local
-    "no_local",         // No local de entrega
-    "recolhida",        // Recolhida
-    "entregue_galpao",  // Entregue ao galpão
-  ]).default("galpao").notNull(),
+    "galpao",                  // No galpão (legado)
+    "galpao_contaminada",      // No galpão (Contaminada)
+    "galpao_descontaminada",   // No galpão (Descontaminada)
+    "a_caminho",               // A caminho do local
+    "no_local",                // No local de entrega
+    "recolhida",               // Recolhida
+    "entregue_galpao",         // Entregue ao galpão
+  ]).default("galpao_contaminada").notNull(),
   /** Descrição ou local atual da bombona */
   localizacao: text("localizacao"),
   /** Criado por qual usuário */
@@ -63,6 +65,8 @@ export const rastreamentos = mysqlTable("rastreamentos", {
   /** Status anterior */
   statusAnterior: mysqlEnum("statusAnterior", [
     "galpao",
+    "galpao_contaminada",
+    "galpao_descontaminada",
     "a_caminho",
     "no_local",
     "recolhida",
@@ -71,6 +75,8 @@ export const rastreamentos = mysqlTable("rastreamentos", {
   /** Status novo */
   statusNovo: mysqlEnum("statusNovo", [
     "galpao",
+    "galpao_contaminada",
+    "galpao_descontaminada",
     "a_caminho",
     "no_local",
     "recolhida",

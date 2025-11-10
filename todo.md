@@ -58,3 +58,10 @@
 ## Bugs Encontrados
 
 - [x] Corrigir erro 404 na rota /api/oauth/login
+
+
+## Alteração de Status de Galpão
+
+- [x] Atualizar schema do banco de dados com novos status
+- [x] Atualizar frontend com novos status
+- [x] Testar novos status no sistema
