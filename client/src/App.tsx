@@ -6,8 +6,25 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import BombonaTracker from "./pages/BombonaTracker";
+import Login from "./pages/Login";
+import { trpc } from "./lib/trpc";
+import { Loader2 } from "lucide-react";
 
 function Router() {
+  const { data: user, isLoading } = trpc.auth.me.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
+  }
+
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>

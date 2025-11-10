@@ -58,3 +58,12 @@
 ## Bugs Encontrados
 
 - [x] Corrigir erro 404 na rota /api/oauth/login
+
+
+## Autenticação Simples (Usuário/Senha)
+
+- [x] Remover autenticação OAuth do backend
+- [x] Implementar API de login com usuário e senha
+- [x] Criar página de login no frontend
+- [x] Implementar gerenciamento de sessão com cookies
+- [x] Testar fluxo completo de login e logout

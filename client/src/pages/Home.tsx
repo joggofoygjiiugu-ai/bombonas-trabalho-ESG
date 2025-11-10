@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
-import { useAuth } from '@/_core/hooks/useAuth';
-import { getLoginUrl } from '@/const';
 import { QRCodeScanner } from '@/components/QRCodeScanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,8 +21,12 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function Home() {
-  const { user, logout, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.reload();
+    },
+  });
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [searchNumero, setSearchNumero] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -63,36 +65,9 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    logout();
+    logoutMutation.mutate();
     toast.success('Desconectado com sucesso');
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl">Rastreamento de Bombonas</CardTitle>
-            <CardDescription>
-              Gerencie e rastreie suas bombonas em tempo real
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-gray-600 mb-6">
-              Faça login para acessar o sistema de rastreamento
-            </p>
-          <Button
-            onClick={() => window.location.href = getLoginUrl()}
-            className="w-full"
-            size="lg"
-          >
-            Fazer Login
-          </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,7 +76,7 @@ export default function Home() {
         <div className="container mx-auto py-4 px-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Rastreamento de Bombonas</h1>
-            <p className="text-sm text-gray-600">Bem-vindo, {user?.name || 'Usuário'}</p>
+            <p className="text-sm text-gray-600">Bem-vindo, Admin</p>
           </div>
           <Button
             variant="outline"
